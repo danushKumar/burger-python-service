@@ -1,9 +1,11 @@
 from flask import Flask
 from .transaction.connection_manager import close_connection
 from .init_app import init_app
+from .app_before_request.auth import auth_validator
 
-import webapp.authentication.sign_up as sign_up
-import webapp.authentication.login as login
+import webapp.blueprint.authentication.sign_up as sign_up
+import webapp.blueprint.authentication.auth as auth
+import  webapp.blueprint.orders.orders as orders
 import os
 
 def create_app(test_config=None):
@@ -29,7 +31,9 @@ def create_app(test_config=None):
     
     init_app(app)
 
+    app.before_request(auth_validator)
     app.register_blueprint(sign_up.bp)
-    app.register_blueprint(login.bp)
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(orders.bp)
 
     return app
